@@ -10,7 +10,7 @@ class _Node {
 class Trie {
   final _Node _root;
 
-  Trie():_root=_Node(0);
+  Trie():_root=_Node(null);
 
   bool search(String word) {
     if (word.isEmpty) {
