@@ -2,22 +2,32 @@ A project created to prepare for the Algorithmics I exam.
 
 Contains the following classes in Dart:
 1. Radix Sort and Trie
-    a. Radix sort
-    b. Trie (unsorted)
-    c. Trie (sorted lexicographically)
+    <ol type="a">
+        <li>Radix Sort</li>
+        <li>Trie (unsorted)</li>
+        <li>Trie (sorted lexicographically)</li>
+    </ol>
 1. String Compression
-    a. Huffman compression
-    b. LZW compression
+    <ol type="a">
+        <li>Huffman compression</li>
+        <li>LZW compression</li>
+    </ol>
 1. String Searching and Distance
-    a. Brute Force
-    b. BM
-    c. KMP
-    d. String Distance
+    <ol type="a">
+        <li>Brute Force</li>
+        <li>BM</li>
+        <li>KMP</li>
+        <li>String Distance</li>
+    </ol>
 1. Graphs I
-    a. Undirected and Directed graph (using adjacency list representation)
-    b. Depth and Breadth First Search
-    c. Weighted Graphs and Dijkstra's Algorithm
+    <ol type="a">
+        <li>Undirected and Directed graph(using adjacency list representation)</li>
+        <li>Depth and Breadth First Search</li>
+        <li>Weighted Graphs and Dijkstra's Algorithm</li>
+    </ol>
 1. Graphs II
-    a. Minimum Spanning Tree- Prim Jarnak
-    b. Minimum Spanning Tree- Dijkstra's Refinement
-    c. Topological Ordering
+    <ol type="a">
+        <li>Minimum Spanning Tree- Prim Jarnak</li>
+        <li>Minimum Spanning Tree- Dijkstra's Refinement</li>
+        <li>Topological Ordering</li>
+    </ol>
