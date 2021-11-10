@@ -1,5 +1,23 @@
-A sample command-line application with an entrypoint in `bin/`, library code
-in `lib/`, and example unit test in `test/`.
+A project created to prepare for the Algorithmics I exam.
 
-Created from templates made available by Stagehand under a BSD-style
-[license](https://github.com/dart-lang/stagehand/blob/master/LICENSE).
+Contains the following classes in Dart:
+1. Radix Sort and Trie
+    a. Radix sort
+    b. Trie (unsorted)
+    c. Trie (sorted lexicographically)
+1. String Compression
+    a. Huffman compression
+    b. LZW compression
+1. String Searching and Distance
+    a. Brute Force
+    b. BM
+    c. KMP
+    d. String Distance
+1. Graphs I
+    a. Undirected and Directed graph (using adjacency list representation)
+    b. Depth and Breadth First Search
+    c. Weighted Graphs and Dijkstra's Algorithm
+1. Graphs II
+    a. Minimum Spanning Tree- Prim Jarnak
+    b. Minimum Spanning Tree- Dijkstra's Refinement
+    c. Topological Ordering
