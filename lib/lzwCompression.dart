@@ -12,7 +12,9 @@ class _Node {
     var current = firstChild;
     _Node prev;
     while (current != null) {
-      if (current.value <= letter) {
+      if (current.value > letter) {
+        return prev;
+      } else if (current.value == letter) {
         return current;
       } else {
         prev = current;
@@ -29,12 +31,12 @@ class _Trie {
   _Trie():root=_Node(null, null);
 }
 
-// Map<int, int> valueMap = {65:0, 67:1, 71:2, 84:3};
+Map<int, int> valueMap = {65:0, 67:1, 71:2, 84:3};
 
 String lzwCompression(String text) {
   final trie = _Trie();
-  var trieSize = 128;
-  var codewordLength = 8;
+  var trieSize = 4;
+  var codewordLength = 2;
 
   var compressed = StringBuffer();
 
@@ -45,14 +47,14 @@ String lzwCompression(String text) {
     var node = current.findChild(text.codeUnitAt(i));
     if (current == trie.root || (node != null && node.value == text.codeUnitAt(i))) {
       if (node == null) {
-        final temp = _Node(text.codeUnitAt(i), text.codeUnitAt(i));
-        // final temp = _Node(text.codeUnitAt(i), valueMap[text.codeUnitAt(i)]);
+        // final temp = _Node(text.codeUnitAt(i), text.codeUnitAt(i));
+        final temp = _Node(text.codeUnitAt(i), valueMap[text.codeUnitAt(i)]);
         temp.sibling = current.firstChild;
         current.firstChild = temp;
         current = temp;
       } else if (node.value != text.codeUnitAt(i)) {
-        final temp = _Node(text.codeUnitAt(i), text.codeUnitAt(i));
-        // final temp = _Node(text.codeUnitAt(i), valueMap[text.codeUnitAt(i)]);
+        // final temp = _Node(text.codeUnitAt(i), text.codeUnitAt(i));
+        final temp = _Node(text.codeUnitAt(i), valueMap[text.codeUnitAt(i)]);
         temp.sibling = node.sibling;
         node.sibling = temp;
         current = temp;
