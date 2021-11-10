@@ -4,7 +4,7 @@ class _Node {
   _Node firstChild;
   _Node sibling;
 
-  _Node(int value):value=value, isWord=false;
+  _Node(this.value):isWord=false;
 }
 
 class Trie {
