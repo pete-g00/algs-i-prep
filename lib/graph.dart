@@ -21,15 +21,16 @@ class Vertex {
 }
 
 class Graph {
+  bool isDirected;
   List<Vertex> vertices;
 
-  Graph(int n):vertices=List.generate(n, (index) => Vertex(index));
+  Graph(int n, [this.isDirected=false]):vertices=List.generate(n, (index) => Vertex(index));
 
   int get size => vertices.length;
 
-  void addEdge(int i, int j, [bool undirected=true]) {
+  void addEdge(int i, int j) {
     vertices[i].add(j);
-    if (undirected) {
+    if (!isDirected) {
       vertices[j].add(i);
     }
   }
