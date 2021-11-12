@@ -12,13 +12,12 @@ abstract class _Node implements Comparable<_Node> {
 }
 
 class _CharNode extends _Node {
-  int value;
   String code;
   
   @override
   int frequency;
 
-  _CharNode(this.value):code='', frequency=1;
+  _CharNode():code='', frequency=1;
   
   @override
   void addCode(bool isLeftChild) {
@@ -28,14 +27,6 @@ class _CharNode extends _Node {
       code = '1' + code;
     }
   }
-
-  @override
-  bool operator ==(covariant _CharNode other) {
-    return value == other.value;
-  }
-
-  @override
-  int get hashCode => value.hashCode;
 
   @override
   String toString() {
@@ -60,40 +51,70 @@ class _NonCharNode extends _Node {
   }
 }
 
+/// Give a text, produces the bit string corresponds to the Huffman compression for the text
+/// 
+/// Does not include the relevant bits to decompress the text
 String huffmanCompression(String text) {
+  // the map that takes a character code to its node
   final charMap = <int, _CharNode>{};
+
+  // for each character in text,
   for (final code in text.codeUnits) {
+    // if the map contains the corresponding node, increase its frequency
     if (charMap.containsKey(code)) {
       charMap[code].frequency++;
-    } else {
-      charMap[code] = _CharNode(code);
+    }
+    // otherwise, create a node for it (frequency defaults to 1)
+    else {
+      charMap[code] = _CharNode();
     }
   }
 
+  // construct the minheap with all the character nodes
   final heap = PriorityQueue<_Node>();
   heap.addAll(charMap.values);
 
-  for (var i=1; i<charMap.length; i++) {
-    final left = heap.removeFirst();
-    final right = heap.removeFirst();
+  // the left child of a huffman node
+  _Node left;
+  // the right child of a huffman node
+  _Node right;
+  // the parent node
+  _Node parent;
 
-    final parent = _NonCharNode(left, right);
+  // until the heap has precisely one element, i.e. n-1 iterations
+  for (var i=1; i<charMap.length; i++) {
+    // remove the left and the right children from the heap
+    left = heap.removeFirst();
+    right = heap.removeFirst();
+
+    // create the parent node
+    parent = _NonCharNode(left, right);
+
+    // add the corresponding code to the two children
     left.addCode(true);
     right.addCode(false);
 
+    // add the parent to the heap
     heap.add(parent);
   }
   
+  // // Compute the weighted path length
   // var wpl = 0;
   // charMap.forEach((key, value){
   //   wpl += value.frequency*value.code.length;
   // });
   // print(wpl);
 
+  // the bitstring corresponding to the compressed file
   final compressed = StringBuffer();
+
+  // for each character in the text,
   for (final code in text.codeUnits) {
+    // write the corresponding code into the compressed file
     compressed.write(charMap[code].code);
   }
+
+  // return the compressed file
   return compressed.toString();
 }
 
