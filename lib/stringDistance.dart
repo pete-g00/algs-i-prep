@@ -1,16 +1,5 @@
 import 'dart:math';
-
-void printTable<E>(List<List<E>> list) {
-  for (var i=0; i<list.length; i++) {
-    if (i == 0) {
-      print('\t[' + list.first.toString() + ',');
-    } else if (i == list.length-1) {
-      print('\t' + list[list.length-1].toString() + ']');
-    } else {
-      print('\t' + list[i].toString() + ',');
-    }
-  }
-}
+import 'auxiliary.dart';
 
 /// Given two strings [word1] and [word2], computes the distance between them with respect to 3 basic string operations:
 /// * insertion of a character;
@@ -50,5 +39,5 @@ int stringDistance(String word1, String word2) {
 }
 
 void main(List<String> args) {
-  stringDistance(args[0], args[1]);
+  stringDistance('saturday', 'sunday');
 }

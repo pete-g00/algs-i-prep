@@ -1,7 +1,9 @@
 import 'package:collection/collection.dart';
+import 'auxiliary.dart';
 
 abstract class _Node implements Comparable<_Node> {
   int get frequency;
+  List<int> get values;
 
   @override
   int compareTo(_Node other) {
@@ -9,6 +11,11 @@ abstract class _Node implements Comparable<_Node> {
   }
 
   void addCode(bool isLeftChild);
+
+  @override
+  String toString() {
+    return '(frequency: $frequency, value(s): ${String.fromCharCodes(values)})';
+  }
 }
 
 class _CharNode extends _Node {
@@ -16,8 +23,10 @@ class _CharNode extends _Node {
   
   @override
   int frequency;
+  @override
+  List<int> values;
 
-  _CharNode():code='', frequency=1;
+  _CharNode(int value):code='', frequency=1, values=[value];
   
   @override
   void addCode(bool isLeftChild) {
@@ -27,11 +36,6 @@ class _CharNode extends _Node {
       code = '1' + code;
     }
   }
-
-  @override
-  String toString() {
-    return code;
-  }
 }
 
 class _NonCharNode extends _Node {
@@ -40,9 +44,10 @@ class _NonCharNode extends _Node {
 
   @override
   int frequency;
+  @override
+  List<int> values;
 
-
-  _NonCharNode(this.left, this.right):frequency=left.frequency+right.frequency;
+  _NonCharNode(this.left, this.right):frequency=left.frequency+right.frequency, values=left.values + right.values;
 
   @override
   void addCode(bool isLeftChild) {
@@ -55,6 +60,7 @@ class _NonCharNode extends _Node {
 /// 
 /// Does not include the relevant bits to decompress the text
 String huffmanCompression(String text) {
+  print('Compressing the text "$text" using Huffman compression');
   // the map that takes a character code to its node
   final charMap = <int, _CharNode>{};
 
@@ -66,14 +72,18 @@ String huffmanCompression(String text) {
     }
     // otherwise, create a node for it (frequency defaults to 1)
     else {
-      charMap[code] = _CharNode();
+      charMap[code] = _CharNode(code);
     }
   }
+  print('Initialised frequency table:');
+  printCharMap(charMap);
+  print('-'*100);
 
   // construct the minheap with all the character nodes
   final heap = PriorityQueue<_Node>();
   heap.addAll(charMap.values);
-
+  print('Added all the values to the min-heap');
+  
   // the left child of a huffman node
   _Node left;
   // the right child of a huffman node
@@ -86,7 +96,7 @@ String huffmanCompression(String text) {
     // remove the left and the right children from the heap
     left = heap.removeFirst();
     right = heap.removeFirst();
-
+    
     // create the parent node
     parent = _NonCharNode(left, right);
 
@@ -96,29 +106,37 @@ String huffmanCompression(String text) {
 
     // add the parent to the heap
     heap.add(parent);
+    print('Iteration $i: Removed the left child: $left and the right child: $right, and added the parent: $parent');
   }
-  
-  // // Compute the weighted path length
-  // var wpl = 0;
-  // charMap.forEach((key, value){
-  //   wpl += value.frequency*value.code.length;
-  // });
-  // print(wpl);
+  print('-'*100);
+
+  // Compute the weighted path length
+  var wpl = 0;
+  print('The weighted path length is:');
+  charMap.forEach((key, value){
+    print('\t ${String.fromCharCodes(value.values)} \t ${value.frequency} * ${value.code.length}');
+    wpl += value.frequency*value.code.length;
+  });
+  print('\t \t = $wpl');
 
   // the bitstring corresponding to the compressed file
+  print('-'*100);
+  print('Constructing the compressed file');
   final compressed = StringBuffer();
 
   // for each character in the text,
   for (final code in text.codeUnits) {
+    print('Writing ${String.fromCharCode(code)} as its code: ${charMap[code].code}');
     // write the corresponding code into the compressed file
     compressed.write(charMap[code].code);
   }
 
+  print('The file is now compressed: $compressed');
   // return the compressed file
   return compressed.toString();
 }
 
 void main(List<String> args) {
-  final text = ' '*15 + 'e'*11 + 'a'*9 + 't'*8 + 'i'*7 + 's'*7 + 'r'*7 + 'o'*6 + 'n'*4 + 'u'*3 + 'h'*2 + 'cd';
-  print(huffmanCompression(text));
+  final text = 'The next train to depart from platform 4 will be the 11:15 Scotrail express service to Edinburgh, calling at Croy, Falkirk High, Polmont, Linlithgow, Haymarket and Edinburgh. This train is formed of 8 coaches. Platform 4 for the 11:15 Scotrail express service to Edinburgh.';
+  huffmanCompression(text);
 }
