@@ -26,6 +26,10 @@ int bruteForce(String string, String substring) {
   }
 }
 
+void main(List<String> args) {
+  print(bruteForce('string', 'substring'));
+}
+
 int kmp(String string, String substring) {
   final m = substring.length;
   final n = string.length;
