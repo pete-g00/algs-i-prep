@@ -4,7 +4,6 @@ class Vertex {
   int index;
   List<int> adjList;
   bool _visited;
-  int pred;
 
   Vertex(this.index):adjList=[], _visited=false;
 
@@ -35,39 +34,48 @@ class Graph {
     }
   }
 
-  void _dfsVisit(Vertex vertex, int j) {
+  void _dfsVisit(Vertex vertex) {
+    // this vertex has been visited
     vertex._visited = true;
-    vertex.pred = j;
     
+    // visit the vertices this vertex is incident to and has not yet been visited
     for (final vertexIndex in vertex.adjList) {
       if (!vertices[vertexIndex]._visited) {
         // print(vertexIndex);
-        _dfsVisit(vertices[vertexIndex], vertex.index);
+        _dfsVisit(vertices[vertexIndex]);
       }
     }
   }
 
+  /// Visits all the vertices using depth-first search
   void dfs() {
+    // unvisit every vertex
     for (final vertex in vertices) {
       vertex._visited = false;
     }
 
+    // visit vertices until they are all visited
     for (final vertex in vertices) {
       if (!vertex._visited) {
         // print(vertex.index);
-        _dfsVisit(vertex, -1);
+        _dfsVisit(vertex);
         // print('');
       }
     }
   }
 
   void _bfsVisit(Queue<Vertex> queue) {
+    // until the queue is empty,
     while (queue.isNotEmpty) {
+      // remove the first element from the queue and visit it
       final vertex = queue.removeFirst();
+      // this vertex has been visited
       vertex._visited = true;
 
+      // visit the vertices this vertex is incident to and has not yet been visited
       for (final vertexIndex in vertex.adjList) {
         if (!vertices[vertexIndex]._visited) {
+          // add it to the end of the queue to be visited
           // print(vertexIndex);
           queue.addLast(vertices[vertexIndex]);
         }
@@ -76,13 +84,17 @@ class Graph {
     }
   }
 
+  /// Visits all the vertices using breadth-first search
   void bfs() {
+    // unvisit every vertex
     for (final vertex in vertices) {
       vertex._visited = false;
     }
 
+    // visit vertices until they are all visited
     final queue = Queue<Vertex>();
     for (final vertex in vertices) {
+      // if the vertex hasn't been visited, add it to the end of the queue and visit the vertex
       if (!vertex._visited) {
         queue.addLast(vertex);
         // print(vertex.index);
@@ -92,16 +104,26 @@ class Graph {
     }
   }
 
+  /// Topologically sort the graph.
+  /// 
+  /// The graph must be a directed acyclic graph. If it is not, then raises a [StateError].
+  /// 
+  /// Returns the indices of the vertices, starting from the one labelled 0.
   List<int> topSort() {
     if (!isDirected) {
       throw StateError('Cannot topologically sort an undirected graph.');
     }
 
+    // the in-degree of a vertex with respect to the vertices still unlabelled
     final count = <int, int>{};
+    // the queue containing source vertices with respect to the vertices still unlabelled
     final sourceQueue = Queue<int>();
+    // the order of the vertices
     final order = <int>[];
+    // the adjacency list of a vertex
     List<int> adjList;
     
+    // initialise the count- compute the in-degree of a vertex
     for (var i=0; i<vertices.length; i++) {
       adjList = vertices[i].adjList;
       for (var j=0; j<adjList.length; j++) {
@@ -109,26 +131,33 @@ class Graph {
       }
     }
     
+    // add all the source vertices to the queue
     for (var i=0; i<vertices.length; i++) {
       if (!count.containsKey(i)) {
         sourceQueue.addLast(i);
       }
     }
 
+    // the index of the removed source vertex
     int i;
+    // until the source queue is empty,
     while (sourceQueue.isNotEmpty) {
+      // remove a source vertex and label it
       i = sourceQueue.removeFirst();
       order.add(i);
       
+      // decrement the in-degree of all the vertices that are incident to this vertex
       for (var j=0; j<vertices[i].adjList.length; j++) {
         count[vertices[i].adjList[j]] --;
 
+        // if any of them become source vertices, add them to the queue
         if (count[vertices[i].adjList[j]] == 0) {
           sourceQueue.addLast(vertices[i].adjList[j]);
         }
       }
     }
 
+    // the list order has all the vertices if and only if it is a DAG
     if (order.length != vertices.length) {
       throw StateError('Not a directed acyclic graph!');
     }
