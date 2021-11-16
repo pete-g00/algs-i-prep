@@ -26,8 +26,24 @@ int bruteForce(String string, String substring) {
   }
 }
 
-void main(List<String> args) {
-  print(bruteForce('string', 'substring'));
+List<int> _createBorderTable(String substring) {
+  final borderTable = List.filled(substring.length, 0);
+  var i;
+  
+  for (var j=2; j<substring.length; j++) {
+    i = borderTable[j-1];
+    while (substring.codeUnitAt(i) != substring.codeUnitAt(j-1) && i > 0) {
+      i = borderTable[i];
+    }
+
+    if (substring.codeUnitAt(i) != substring.codeUnitAt(j-1) && i == 0) {
+      borderTable[j] = 0;
+    } else {
+      borderTable[j] = i+1;
+    }
+  }
+
+  return borderTable;
 }
 
 int kmp(String string, String substring) {
@@ -37,8 +53,7 @@ int kmp(String string, String substring) {
   var i = 0;
   var j = 0;
   
-  // TODO: Create border table
-  final borderTable = <int>[];
+  final borderTable = _createBorderTable(substring);
 
   while (i <= n) {
     if (string.codeUnitAt(i) == substring.codeUnitAt(j)) {
@@ -61,6 +76,16 @@ int kmp(String string, String substring) {
   return -1;
 }
 
+Map<int, int> _createLastOcurrenceMap(String substring) {
+  final lastOcurrence = <int, int>{};
+  
+  for (var i = 0; i < substring.length; i++) {
+    lastOcurrence[substring.codeUnitAt(i)] = i;
+  }
+
+  return lastOcurrence;
+}
+
 int bm(String string, String substring) {
   final m = substring.length;
   final n = string.length;
@@ -69,18 +94,22 @@ int bm(String string, String substring) {
   var i = m-1;
   var j = m-1;
 
-  // TODO: Create last occurrence
-  final lastOccurrence = <int, int>{};
+  final lastOccurrence = _createLastOcurrenceMap(substring);
 
   while (start <= n-m && j >= 0) {
+    // print('i: $i, j: $j');
+    // print('string: ' + string[i] + ', substring: ' + substring[j]);
     if (string.codeUnitAt(i) == substring.codeUnitAt(j)) {
       i--;
       j--;
     } else {
-      start = max(i, j-lastOccurrence[string.codeUnitAt(i)]);
-      i += m - min(j, i+lastOccurrence[string.codeUnitAt(i)]);
+      // print(lastOccurrence[string.codeUnitAt(i)] ?? -1);
+      start += max(1, j-(lastOccurrence[string.codeUnitAt(i)] ?? -1));
+      i += m - min(j, 1+(lastOccurrence[string.codeUnitAt(i)] ?? -1));
+      // print('start: $start, i: $i');
       j = m-1;
     }
+    // print('');
   }
 
   if (j < 0) {
@@ -88,4 +117,8 @@ int bm(String string, String substring) {
   } else {
     return -1;
   }
+}
+
+void main(List<String> args) {
+  print(bm('bacbabababacaab', 'ababaca'));
 }
