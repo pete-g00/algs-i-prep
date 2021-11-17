@@ -9,18 +9,29 @@ class _Node {
   _Node(this.value, this.code);
 
   _Node findChild(int letter) {
+    // the current child of the node
     var current = firstChild;
+    // the previous child of the node (needed when the current node is null)
     _Node prev;
+    
+    // until there are no siblings to check,
     while (current != null) {
+      // if we are past the character wrt lexicographic order, the node doesn't exist and should go between current.previousSibling = prev and current
       if (current.value > letter) {
         return prev;
-      } else if (current.value == letter) {
+      }
+      // if the characters match, return the matching node
+      else if (current.value == letter) {
         return current;
-      } else {
+      } 
+      // otherwise, move to the next node
+      else {
         prev = current;
         current = current.sibling;
       }
     }
+    
+    // we past the last sibling -> return the last node
     return prev;
   }
 }
@@ -35,6 +46,7 @@ class _Trie {
 
 /// Compresses a file with ASCII characters using LZW compression.
 String lzwCompression(String text) {
+  print('Compressing the text \'$text\' using LZW compression.');
   // the trie
   final trie = _Trie();
   // the size of the trie
@@ -58,11 +70,13 @@ String lzwCompression(String text) {
 
   // until we've considered each character,
   while (i < text.length) {
+    print('We are looking at the text from index $i');
     // try to find the closest child to text[i]
     child = current.findChild(text.codeUnitAt(i));
     
     // if the parent node is root, then go to the next character (even if the child node isn't present)
     if (current == trie.root || (child != null && child.value == text.codeUnitAt(i))) {
+      print('The current node has a child with letter ${text[i]}. Move onto the next character and descend the trie.');
       // if there is no child, create a node for the character and attach it as firstChild
       if (child == null) {
         final temp = _Node(text.codeUnitAt(i), text.codeUnitAt(i));
@@ -88,8 +102,10 @@ String lzwCompression(String text) {
     } 
     // otherwise, 
     else {
+      print('The current child doesn\'t have a child with letter ${text[i]}. Move back to the root node and start back from this character.');
       // create a node for this character
       temp = _Node(text.codeUnitAt(i), trieSize);
+      print('Created a node for the letter ${text[i]} and code $trieSize');
       // if there is no child, create a node for the character and attach it as firstChild
       if (child == null) {
         temp.sibling = current.firstChild;
@@ -105,28 +121,35 @@ String lzwCompression(String text) {
       code = current.code.toRadixString(2);
       compressed.write('0'*(codewordLength - code.length));
       compressed.write(code);
-      // print('0'*(codewordLength - code.length) + code);
+      print('Written ${'0'*(codewordLength - code.length) + code} to the compressed file');
       
       // increase the size of the trie and (if necessary) the codeword length
       trieSize++;
+      print('Incrmented the trie size: it now has $trieSize elements!');
       if (trieSize > pow(2, codewordLength)) {
         codewordLength++;
+        print('Incrmented the codeword length: it is now $codewordLength.');
       }
 
       // go back to the root
       current = trie.root;
+      print('-'*100);
     }
   }
   // the final code is yet to be added
   code = current.code.toRadixString(2);
   compressed.write('0'*(codewordLength - code.length));
   compressed.write(code);
+  print('Written ${'0'*(codewordLength - code.length) + code} to the compressed file');
+  print('-'*100);
+
   // print('0'*(codewordLength - code.length) + code);
+  print('The text is now compressed: $compressed');
 
   // return the compressed file
   return compressed.toString();
 }
 
 void main(List<String> args) {
-  print(lzwCompression('GACGATACGATACG'));
+  lzwCompression('GACGATACGATACG');
 }
