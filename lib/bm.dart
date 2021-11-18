@@ -20,8 +20,6 @@ int bm(String string, String substring) {
   final m = substring.length;
   final n = string.length;
 
-  // the index where we have aligned the string and the substring
-  var start = 0;
   // the index in string
   var i = m-1;
   // the index in substring
@@ -34,10 +32,10 @@ int bm(String string, String substring) {
   printCharMap(lastOccurrence);
   
   print('-'*100);
-  print('Aligning the substring at index $start');
+  print('Aligning the substring at index ${i-j}');
 
   // until there is a valid alignment,
-  while (start <= n-m) {
+  while (i-j <= n-m) {
     print('Checking string[$i] = ${string[i]} and substring[$j] = ${substring[j]}');
     // if characters match, consider the previous character
     if (string.codeUnitAt(i) == substring.codeUnitAt(j)) {
@@ -47,34 +45,38 @@ int bm(String string, String substring) {
 
       // if we've gotten to the start of the substring, the substring was found in the string
       if (j < 0) {
-        print('The substring has been completely found in the string- returning $start');
-        return start;
+        print('The substring has been completely found in the string- returning ${i-j}');
+        return i-j;
       }
       print('Moving on to the next character');
     }
     // otherwise, consider the next valid character
     else {
       print('The characters do not match!');
+      // find the last ocurrence of string[i] in the substring
       value = lastOccurrence[string.codeUnitAt(i)];
+      // if the substring doesn't have the string, we move past all the characters before string[i]
       if (value == null) {
         print('Case 1: The character ${string[i]} is not present in the substring');
         print('\tWe realign just after i = $i');
-        start = 1+i;
-      } else if (j < value) {
+        i += m;
+      }
+      // if the substring does have the string, but we're past it, we just start from the next character
+      else if (j < value) {
         print('Case 2: The character ${string[i]} is present in the string, but we are past the last ocurrence in the substring');
-        print('\tWe increment start = $start');
-        start ++;
+        print('\tWe increment start = ${i-j}');
+        i += m - j;
       } else {
         print('Case 3: The character ${string[i]} is present in the string, and we are not past the last ocurrence in the substring');
         print('\tWe fix substring[value] = ${substring[value]} to this index');
-        start = i - value;
+        i += m - value - 1;
       }
       // start += max(1, j-(lastOccurrence[string.codeUnitAt(i)] ?? -1));
       // i += m - min(j, 1+(lastOccurrence[string.codeUnitAt(i)] ?? -1));
-      i = m-1 + start;
+      // i = m-1 + start;
       j = m-1;
       print('-'*100);
-      print('Aligning the substring at index $start');
+      print('Aligning the substring at index ${i-j}');
     }
   }
 
@@ -84,5 +86,5 @@ int bm(String string, String substring) {
 }
 
 void main(List<String> args) {
-  bm('bacbabababacaab', 'ababaca');
+  bm('abccaabacaababa', 'acaa');
 }
