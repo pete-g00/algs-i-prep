@@ -199,15 +199,18 @@ class Trie {
 
   void _extract(List<String> list, _Node node, String prefix) {
     if (node != null) {
+      print('Encountered the node $node.');
       // create the corresponding word
       final word = prefix + String.fromCharCode(node.value);
       // add it if it is a word
       if (node.isWord) {
+        print('Found the word $word!');
         list.add(word);
       }
       
       // extract on child with the extra character
       _extract(list, node.firstChild, word);
+      print('-'*100);
       
       // extract on sibling without the extra character
       _extract(list, node.nextSibling, prefix);
@@ -216,6 +219,7 @@ class Trie {
 
   /// Extracts all the words present in the trie.
   List<String> extract() {
+    print('Extracting the trie:');
     final list = <String>[];
     _extract(list, _root.firstChild, '');
     return list;
