@@ -19,6 +19,18 @@ class Vertex {
   }
 }
 
+class Edge {
+  int fromIndex;
+  int toIndex;
+
+  Edge(this.fromIndex, this.toIndex);
+
+  @override
+  String toString() {
+    return '(v$fromIndex -> v$toIndex)';
+  }
+}
+
 class Graph {
   bool isDirected;
   List<Vertex> vertices;
@@ -34,21 +46,22 @@ class Graph {
     }
   }
 
-  void _dfsVisit(Vertex vertex) {
+  void _dfsVisit(Vertex pred, Vertex next, void Function(Vertex pred, Vertex next) fn) {
     // this vertex has been visited
-    vertex._visited = true;
+    next._visited = true;
+    fn(pred, next);
     
     // visit the vertices this vertex is incident to and has not yet been visited
-    for (final vertexIndex in vertex.adjList) {
+    for (final vertexIndex in next.adjList) {
       if (!vertices[vertexIndex]._visited) {
-        print('Visiting the vertex ${vertices[vertexIndex]} through the vertex $vertex');
-        _dfsVisit(vertices[vertexIndex]);
+        print('Visiting the vertex v$vertexIndex through the vertex $next');
+        _dfsVisit(next, vertices[vertexIndex], fn);
       }
     }
   }
 
   /// Visits all the vertices using depth-first search
-  void dfs() {
+  void dfs(void Function(Vertex pred, Vertex next) fn) {
     // unvisit every vertex
     for (final vertex in vertices) {
       vertex._visited = false;
@@ -59,29 +72,49 @@ class Graph {
     for (final vertex in vertices) {
       if (!vertex._visited) {
         print('Starting this iteration from the vertex $vertex');
-        _dfsVisit(vertex);
+        _dfsVisit(null, vertex, fn);
         print('-'*100);
       }
     }
   }
 
-  void _bfsVisit(Queue<Vertex> queue) {
+  List<Edge> dfsSpanningTree() {
+    print('Finding the spanning tree of the graph using DFS.');
+    final edges = <Edge>[];
+    dfs((pred, next) { 
+      if (pred != null) {
+        print('Adding the edge from v${pred.index} to v${next.index}');
+        edges.add(Edge(pred.index, next.index));
+      }
+    });
+    print('Found the tree: it contains the following edges: $edges');
+    return edges;
+  }
+
+  void _bfsVisit(Queue<Edge> queue, void Function(Vertex pred, Vertex next) fn) {
     // until the queue is empty,
     while (queue.isNotEmpty) {
       // remove the first element from the queue
-      final vertex = queue.removeFirst();
+      final edge = queue.removeFirst();
+      final vertex = vertices[edge.toIndex];
       // visit the vertex if it hasn't been visited
       if (!vertex._visited) {
+        print('Visiting the vertex $vertex');
+        if (edge.fromIndex != null) {
+        fn(vertices[edge.fromIndex], vertices[edge.toIndex]);
+        } else {
+          fn(null, vertices[edge.toIndex]);
+        }
+        
         // this vertex has been visited
         vertex._visited = true;
-        print('Visiting the vertex $vertex');
 
         // visit the vertices this vertex is incident to and has not yet been visited
         for (final vertexIndex in vertex.adjList) {
           if (!vertices[vertexIndex]._visited) {
             // add it to the end of the queue to be visited
-            print('Added the ${vertices[vertexIndex]} to the queue');
-            queue.addLast(vertices[vertexIndex]);
+            print('Added the vertex v$vertexIndex to the queue');
+            queue.addLast(Edge(vertex.index, vertexIndex));
           }
         }
         print('-'*100);
@@ -90,23 +123,63 @@ class Graph {
   }
 
   /// Visits all the vertices using breadth-first search
-  void bfs() {
+  void bfs(void Function(Vertex pred, Vertex next) fn, [Vertex start]) {
     // unvisit every vertex
     for (final vertex in vertices) {
       vertex._visited = false;
     }
 
-    print('Visiting all the vertices in the graph using Depth-First Search');
+    print('Visiting all the vertices in the graph using Breadth-First Search');
     // visit vertices until they are all visited
-    final queue = Queue<Vertex>();
+    final queue = Queue<Edge>();
+    // if a starting vertex is given, start by visiting that vertex
+    if (start != null) {
+      queue.addLast(Edge(null, start.index));
+      _bfsVisit(queue, fn);
+    }
     for (final vertex in vertices) {
       // if the vertex hasn't been visited, add it to the end of the queue and visit the vertex
       if (!vertex._visited) {
-        queue.addLast(vertex);
+        queue.addLast(Edge(null, vertex.index));
         print('Starting this iteration the vertex $vertex');
-        _bfsVisit(queue);
+        _bfsVisit(queue, fn);
       }
     }
+  }
+
+  List<Edge> bfsSpanningTree() {
+    print('Finding the spanning tree of the graph using BFS.');
+    final edges = <Edge>[];
+    bfs((pred, next) { 
+      if (pred != null) {
+        print('Adding the edge from v${pred.index} to v${next.index}');
+        edges.add(Edge(pred.index, next.index));
+      }
+    });
+    print('Found the tree: it contains the following edges: $edges');
+    return edges;
+  }
+
+  /// Computes the distance from the given [vertex] to all the other vertices
+  /// 
+  /// Returns a list, where the distance from [vertex] to the vertex i is at index i
+  List<int> distance(Vertex vertex) {
+    // initialise the distance list
+    final dist = List<int>.filled(vertices.length, null);
+    // visit the vertices using breadth first search
+    bfs((pred, next) {
+      // if there was no previous edge (i.e. next == vertex) -> distance = 0
+      if (pred == null) {
+        print('\tThe distance of $next from $vertex is 0!');
+        dist[next.index] = 0;
+      }
+      // otherwise, the distance is previous + 1
+      else {
+        dist[next.index] = dist[pred.index] + 1;
+        print('\tThe distance of $next from $vertex is ${dist[next.index]}, and the closest approach to $vertex is through $pred.');
+      }
+    }, vertex);
+    return dist;
   }
 
   /// Topologically sort the graph.
@@ -196,33 +269,49 @@ Graph _createGraph() {
   // graph.addEdge(10, 12);
   // graph.addEdge(12, 13);
 
-  final graph = Graph(9, true);
+  // final graph = Graph(9, true);
+  // graph.addEdge(0, 1);
+  // graph.addEdge(0, 2);
+  
+  // graph.addEdge(1, 2);
+  // graph.addEdge(1, 4);
+  // graph.addEdge(1, 6);
+  // // graph.addEdge(6, 1);
+
+  // graph.addEdge(2, 3);
+  
+  // graph.addEdge(3, 5);
+
+  // graph.addEdge(4, 5);
+  // // graph.addEdge(4, 6);
+  // graph.addEdge(4, 7);
+
+  // graph.addEdge(5, 8);
+
+  // graph.addEdge(6, 7);
+
+  // graph.addEdge(7, 8);
+
+  final graph = Graph(8);
   graph.addEdge(0, 1);
-  graph.addEdge(0, 2);
   
   graph.addEdge(1, 2);
   graph.addEdge(1, 4);
-  graph.addEdge(1, 6);
-  // graph.addEdge(6, 1);
-
-  graph.addEdge(2, 3);
   
+  graph.addEdge(2, 3);
+  graph.addEdge(2, 5);
+
   graph.addEdge(3, 5);
 
   graph.addEdge(4, 5);
-  // graph.addEdge(4, 6);
-  graph.addEdge(4, 7);
-
-  graph.addEdge(5, 8);
+  graph.addEdge(4, 6);
 
   graph.addEdge(6, 7);
-
-  graph.addEdge(7, 8);
 
   return graph;
 }
 
 void main(List<String> args) {
   final graph = _createGraph();
-  graph.topSort();
+  graph.dfsSpanningTree();
 }
