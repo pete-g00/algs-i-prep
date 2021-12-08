@@ -76,7 +76,9 @@ int bm(String string, String substring) {
       // i = m-1 + start;
       j = m-1;
       print('-'*100);
-      print('Aligning the substring at index ${i-j}');
+      if (i-j <= n-m) {
+        print('Aligning the substring at index ${i-j}');
+      }
     }
   }
 
@@ -86,5 +88,5 @@ int bm(String string, String substring) {
 }
 
 void main(List<String> args) {
-  bm('abccaabacaababa', 'acaa');
+  bm('bacbabababacaab', 'caab');
 }

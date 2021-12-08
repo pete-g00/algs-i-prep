@@ -137,6 +137,6 @@ String huffmanCompression(String text) {
 }
 
 void main(List<String> args) {
-  final text = 'The next train to depart from platform 4 will be the 11:15 Scotrail express service to Edinburgh, calling at Croy, Falkirk High, Polmont, Linlithgow, Haymarket and Edinburgh. This train is formed of 8 coaches. Platform 4 for the 11:15 Scotrail express service to Edinburgh.';
+  final text = 'a simple string to be encoded using a minimal number of bits';
   huffmanCompression(text);
 }

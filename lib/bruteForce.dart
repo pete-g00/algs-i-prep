@@ -37,7 +37,7 @@ int bruteForce(String string, String substring) {
       i = 1+i-j;
       j = 0;
       print('-'*100);
-      if (i-j <= n-m) {
+      if (i <= n-m) {
         print('Aligning the substring at index ${i-j}');
       }
     }
@@ -49,5 +49,5 @@ int bruteForce(String string, String substring) {
 }
 
 void main(List<String> args) {
-  bruteForce('bacbabababacaab', 'ababaca');
+  bruteForce('bacbabababacaab', 'caab');
 }

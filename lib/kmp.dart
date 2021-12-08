@@ -51,7 +51,7 @@ int kmp(String string, String substring) {
   print('Aligning the substring at index ${i-j}');
 
   // until there is nowhere in the string to find the substring,
-  while (i <= n) {
+  while (i-j <= n-m) {
     print('Checking string[$i] = ${string[i]} and substring[$j] = ${substring[j]}');
     // if string[i] == substring[j], move to the next character
     if (string.codeUnitAt(i) == substring.codeUnitAt(j)) {
@@ -86,7 +86,9 @@ int kmp(String string, String substring) {
         j = 0;
       }
       print('-'*100);
-      print('Aligning the substring at index ${i-j}');
+      if (i <= n-m) {
+        print('Aligning the substring at index ${i-j}');
+      }
     }
   }
 
@@ -96,5 +98,5 @@ int kmp(String string, String substring) {
 }
 
 void main(List<String> args) {
-  kmp('bacbabababacaab', 'ababaca');
+  kmp('bacbabababacaab', 'caab');
 }

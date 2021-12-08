@@ -151,5 +151,7 @@ String lzwCompression(String text) {
 }
 
 void main(List<String> args) {
-  lzwCompression('GACGATACGATACG');
+  final str = 'ab'*50;
+  final cfile = lzwCompression(str);
+  print(cfile.length);
 }
