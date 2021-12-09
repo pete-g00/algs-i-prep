@@ -68,7 +68,7 @@ int bm(String string, String substring) {
         i += m - j;
       } else {
         print('Case 3: The character ${string[i]} is present in the string, and we are not past the last ocurrence in the substring');
-        print('\tWe fix substring[value] = ${substring[value]} to this index');
+        print('\tWe fix substring[$value] = ${substring[value]} to this index');
         i += m - value - 1;
       }
       // start += max(1, j-(lastOccurrence[string.codeUnitAt(i)] ?? -1));

@@ -51,6 +51,6 @@ Iterable<int> radixSort(List<int> list, int m, int b) {
 }
 
 void main(List<String> args) {
-  final list = [15, 43, 5, 27, 60, 18, 26, 2];
+  final list = [15, 43, 5, 27, 60, 18, 26, 25];
   radixSort(list, 6, 2);
 }

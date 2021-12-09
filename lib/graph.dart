@@ -23,14 +23,14 @@ class Vertex {
 }
 
 class Edge {
-  int fromIndex;
-  int toIndex;
+  Vertex from;
+  Vertex to;
 
-  Edge(this.fromIndex, this.toIndex);
+  Edge(this.from, this.to);
 
   @override
   String toString() {
-    return '(v$fromIndex -> v$toIndex)';
+    return '($from -> $to)';
   }
 }
 
@@ -41,7 +41,7 @@ class Graph {
   Graph(int n, [this.isDirected=false]):vertices=List.generate(n, (index) => Vertex(index));
 
   factory Graph.fromLabels(List<String> labels, [bool isDirected=false]) {
-    final graph = Graph(labels.length);
+    final graph = Graph(labels.length, isDirected);
     for (var i = 0; i < labels.length; i++) {
       graph.vertices[i].label = labels[i];
     }
@@ -66,7 +66,7 @@ class Graph {
     // visit the vertices this vertex is incident to and has not yet been visited
     for (final vertexIndex in next.adjList) {
       if (!vertices[vertexIndex]._visited) {
-        print('Visiting the vertex v$vertexIndex through the vertex $next');
+        print('Visiting the vertex ${vertices[vertexIndex]} through the vertex $next');
         _dfsVisit(next, vertices[vertexIndex], fn);
       }
     }
@@ -95,8 +95,8 @@ class Graph {
     final edges = <Edge>[];
     dfs((pred, next) { 
       if (pred != null) {
-        print('Adding the edge from v${pred.index} to v${next.index}');
-        edges.add(Edge(pred.index, next.index));
+        print('\tAdding the edge from $pred to $next');
+        edges.add(Edge(pred, next));
       }
     });
     print('Found the tree: it contains the following edges: $edges');
@@ -108,14 +108,14 @@ class Graph {
     while (queue.isNotEmpty) {
       // remove the first element from the queue
       final edge = queue.removeFirst();
-      final vertex = vertices[edge.toIndex];
+      final vertex = vertices[edge.to.index];
       // visit the vertex if it hasn't been visited
       if (!vertex._visited) {
         print('Visiting the vertex $vertex');
-        if (edge.fromIndex != null) {
-        fn(vertices[edge.fromIndex], vertices[edge.toIndex]);
+        if (edge.from != null) {
+        fn(vertices[edge.from.index], vertices[edge.to.index]);
         } else {
-          fn(null, vertices[edge.toIndex]);
+          fn(null, vertices[edge.to.index]);
         }
         
         // this vertex has been visited
@@ -125,8 +125,8 @@ class Graph {
         for (final vertexIndex in vertex.adjList) {
           if (!vertices[vertexIndex]._visited) {
             // add it to the end of the queue to be visited
-            print('Added the vertex v$vertexIndex to the queue');
-            queue.addLast(Edge(vertex.index, vertexIndex));
+            print('Added the vertex ${vertices[vertexIndex]} to the queue');
+            queue.addLast(Edge(vertex, vertices[vertexIndex]));
           }
         }
         print('-'*100);
@@ -146,13 +146,13 @@ class Graph {
     final queue = Queue<Edge>();
     // if a starting vertex is given, start by visiting that vertex
     if (start != null) {
-      queue.addLast(Edge(null, start.index));
+      queue.addLast(Edge(null, start));
       _bfsVisit(queue, fn);
     }
     for (final vertex in vertices) {
       // if the vertex hasn't been visited, add it to the end of the queue and visit the vertex
       if (!vertex._visited) {
-        queue.addLast(Edge(null, vertex.index));
+        queue.addLast(Edge(null, vertex));
         print('Starting this iteration the vertex $vertex');
         _bfsVisit(queue, fn);
       }
@@ -164,8 +164,8 @@ class Graph {
     final edges = <Edge>[];
     bfs((pred, next) { 
       if (pred != null) {
-        print('Adding the edge from v${pred.index} to v${next.index}');
-        edges.add(Edge(pred.index, next.index));
+        print('\tAdding the edge from $pred to $next');
+        edges.add(Edge(pred, next));
       }
     });
     print('Found the tree: it contains the following edges: $edges');
@@ -175,7 +175,9 @@ class Graph {
   /// Computes the distance from the given [vertex] to all the other vertices
   /// 
   /// Returns a list, where the distance from [vertex] to the vertex i is at index i
-  List<int> distance(Vertex vertex) {
+  List<int> distance(int i) {
+    final vertex = vertices[i];
+    print('Finding the distance from $vertex to all the vertices.');
     // initialise the distance list
     final dist = List<int>.filled(vertices.length, null);
     // visit the vertices using breadth first search
@@ -228,7 +230,7 @@ class Graph {
     // add all the source vertices to the queue
     for (var i=0; i<vertices.length; i++) {
       if (count[i] == 0) {
-        print('The vertex v$i is a source vertex.');
+        print('The vertex ${vertices[i]} is a source vertex.');
         sourceQueue.addLast(i);
       }
     }
@@ -239,7 +241,7 @@ class Graph {
       print('-'*100);
       // remove a source vertex and label it
       i = sourceQueue.removeFirst();
-      print('Labelling vertex v$i with value ${order.length}');
+      print('Labelling vertex ${vertices[i]} with value ${order.length}');
       order.add(i);
       
       // decrement the in-degree of all the vertices that are incident to this vertex
@@ -248,7 +250,7 @@ class Graph {
         
         // if any of them become source vertices, add them to the queue
         if (count[vertices[i].adjList[j]] == 0) {
-          print('The vertex v${vertices[i].adjList[j]} is now a source vertex.');
+          print('The vertex ${vertices[vertices[i].adjList[j]]} is now a source vertex.');
           sourceQueue.addLast(vertices[i].adjList[j]);
         }
       }
@@ -340,7 +342,7 @@ Graph _createGraph() {
 
   // return graph;
 
-  final graph = Graph.fromLabels(['u', 'v', 'w', 'x', 'y', 'z']);
+  final graph = Graph.fromLabels(['u', 'v', 'w', 'x', 'y', 'z'], true);
 
   graph.addEdge(0,1);
   graph.addEdge(0,2);
@@ -360,6 +362,6 @@ Graph _createGraph() {
 
 void main(List<String> args) {
   final graph = _createGraph();
-  // graph.dfsSpanningTree();
-  graph.toLatexString();
+  graph.topSort();
+  // graph.toLatexString();
 }
