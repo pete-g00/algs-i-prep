@@ -35,9 +35,11 @@ int stringDistance(String word1, String word2) {
 
   print('Computed all the values. Returning the value in the last cell- ${table[word1.length][word2.length]}');
   // the distance of the string is in the last cell
+
+  print(listToTable(table));
   return table[word1.length][word2.length];
 }
 
 void main(List<String> args) {
-  stringDistance('saturday', 'sunday');
+  stringDistance('sunday', 'saturday');
 }

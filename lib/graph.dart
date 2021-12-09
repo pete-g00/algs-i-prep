@@ -1,9 +1,12 @@
 import 'dart:collection';
 
+import 'package:dart/auxiliary.dart';
+
 class Vertex {
   int index;
   List<int> adjList;
   bool _visited;
+  String label;
 
   Vertex(this.index):adjList=[], _visited=false;
 
@@ -15,7 +18,7 @@ class Vertex {
 
   @override
   String toString() {
-    return 'v${index.toString()}';
+    return label ?? 'v${index.toString()}';
   }
 }
 
@@ -36,6 +39,15 @@ class Graph {
   List<Vertex> vertices;
 
   Graph(int n, [this.isDirected=false]):vertices=List.generate(n, (index) => Vertex(index));
+
+  factory Graph.fromLabels(List<String> labels, [bool isDirected=false]) {
+    final graph = Graph(labels.length);
+    for (var i = 0; i < labels.length; i++) {
+      graph.vertices[i].label = labels[i];
+    }
+
+    return graph;
+  }
 
   int get size => vertices.length;
 
@@ -251,6 +263,24 @@ class Graph {
 
     return order;
   }
+
+  void toLatexString() {
+    final vertices = StringBuffer();
+    final edges = StringBuffer();
+    List<int> adjList;
+
+    for (var i = 0; i < this.vertices.length; i++) {
+      vertices.write(writeVertex(this.vertices[i].toString()));
+      vertices.write('\n');
+      adjList = this.vertices[i].adjList;
+      for (var j = 0; j < adjList.length; j++) {
+        edges.write(writeEdge(this.vertices[i].toString(), this.vertices[adjList[j]].toString(), isDirected));
+        edges.write('\n');
+      }
+    }
+    print(vertices);
+    print(edges);
+  }
 }
 
 Graph _createGraph() {
@@ -292,26 +322,44 @@ Graph _createGraph() {
 
   // graph.addEdge(7, 8);
 
-  final graph = Graph(8);
-  graph.addEdge(0, 1);
+  // final graph = Graph(8);
+  // graph.addEdge(0, 1);
   
-  graph.addEdge(1, 2);
-  graph.addEdge(1, 4);
+  // graph.addEdge(1, 2);
+  // graph.addEdge(1, 4);
   
-  graph.addEdge(2, 3);
-  graph.addEdge(2, 5);
+  // graph.addEdge(2, 3);
+  // graph.addEdge(2, 5);
 
-  graph.addEdge(3, 5);
+  // graph.addEdge(3, 5);
 
-  graph.addEdge(4, 5);
-  graph.addEdge(4, 6);
+  // graph.addEdge(4, 5);
+  // graph.addEdge(4, 6);
 
-  graph.addEdge(6, 7);
+  // graph.addEdge(6, 7);
+
+  // return graph;
+
+  final graph = Graph.fromLabels(['u', 'v', 'w', 'x', 'y', 'z']);
+
+  graph.addEdge(0,1);
+  graph.addEdge(0,2);
+  graph.addEdge(0,5);
+  graph.addEdge(1,2);
+  graph.addEdge(1,4);
+  graph.addEdge(1,5);
+  graph.addEdge(2,3);
+  graph.addEdge(2,4);
+  graph.addEdge(2,5);
+  graph.addEdge(3,4);
+  graph.addEdge(3,5);
+  graph.addEdge(4,5);
 
   return graph;
 }
 
 void main(List<String> args) {
   final graph = _createGraph();
-  graph.dfsSpanningTree();
+  // graph.dfsSpanningTree();
+  graph.toLatexString();
 }

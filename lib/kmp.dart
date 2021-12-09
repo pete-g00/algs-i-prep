@@ -98,5 +98,5 @@ int kmp(String string, String substring) {
 }
 
 void main(List<String> args) {
-  kmp('bacbabababacaab', 'caab');
+  kmp('abcaabit', 'caab');
 }

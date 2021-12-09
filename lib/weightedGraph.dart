@@ -1,3 +1,5 @@
+import 'auxiliary.dart';
+
 class WeightedNode {
   int index;
   int weight;
@@ -8,7 +10,7 @@ class WeightedNode {
 class WeightedVertex {
   int index;
   List<WeightedNode> adjList;
-  int pred;
+  String label;
 
   WeightedVertex(this.index):adjList=[];
 
@@ -20,7 +22,7 @@ class WeightedVertex {
 
   @override
   String toString() {
-    return 'v${index.toString()}';
+    return label ?? 'v${index.toString()}';
   }
 }
 
@@ -42,6 +44,16 @@ class WeightedGraph {
   List<WeightedVertex> vertices;
   
   WeightedGraph(int n, [this.isDirected=false]):vertices=List.generate(n, (index) => WeightedVertex(index));
+
+  factory WeightedGraph.fromLabels(List<String> labels, [bool isDirected=false]) {
+    final graph = WeightedGraph(labels.length);
+    for (var i = 0; i < labels.length; i++) {
+      graph.vertices[i].label = labels[i];
+    }
+
+    return graph;
+  }
+
 
   void addEdge(int i, int j, int weight) {
     vertices[i].add(j, weight);
@@ -240,24 +252,43 @@ class WeightedGraph {
 
     return edges;
   }
+
+  
+  void toLatexString() {
+    final vertices = StringBuffer();
+    final edges = StringBuffer();
+    List<WeightedNode> adjList;
+
+    for (var i = 0; i < this.vertices.length; i++) {
+      vertices.write(writeVertex(this.vertices[i].toString()));
+      vertices.write('\n');
+      adjList = this.vertices[i].adjList;
+      for (var j = 0; j < adjList.length; j++) {
+        edges.write(writeEdge(this.vertices[i].toString(), this.vertices[adjList[j].index].toString(), isDirected, adjList[j].weight));
+        edges.write('\n');
+      }
+    }
+    print(vertices);
+    print(edges);
+  }
 }
 
 WeightedGraph _createGraph() {
-  final graph = WeightedGraph(6, true);
-  graph.addEdge(0, 1, 2);
-  graph.addEdge(0, 2, 8);
+  // final graph = WeightedGraph(6, true);
+  // graph.addEdge(0, 1, 2);
+  // graph.addEdge(0, 2, 8);
   
-  graph.addEdge(1, 2, 3);
-  graph.addEdge(1, 3, 4);
-  graph.addEdge(1, 4, 9);
+  // graph.addEdge(1, 2, 3);
+  // graph.addEdge(1, 3, 4);
+  // graph.addEdge(1, 4, 9);
   
-  graph.addEdge(2, 4, 7);
-  graph.addEdge(2, 3, 2);
+  // graph.addEdge(2, 4, 7);
+  // graph.addEdge(2, 3, 2);
   
-  graph.addEdge(3, 4, 1);
-  graph.addEdge(3, 5, 6);
+  // graph.addEdge(3, 4, 1);
+  // graph.addEdge(3, 5, 6);
   
-  graph.addEdge(4, 5, 4);
+  // graph.addEdge(4, 5, 4);
   
   // final graph = WeightedGraph(6);
   // graph.addEdge(0, 1, 8);
@@ -295,9 +326,25 @@ WeightedGraph _createGraph() {
   // // graph.addEdge(4, 5, 7);
   // graph.addEdge(4, 0, 7);
 
+  final graph = WeightedGraph.fromLabels(['u', 'v', 'w', 'x', 'y', 'z']);
+
+  graph.addEdge(0,1,5);
+  graph.addEdge(0,2,10);
+  graph.addEdge(0,5,8);
+  graph.addEdge(1,2,7);
+  graph.addEdge(1,4,9);
+  graph.addEdge(1,5,7);
+  graph.addEdge(2,3,6);
+  graph.addEdge(2,4,8);
+  graph.addEdge(2,5,8);
+  graph.addEdge(3,4,9);
+  graph.addEdge(3,5,10);
+  graph.addEdge(4,5,8);
+
   return graph;
 }
 void main(List<String> args) {
   final graph = _createGraph();
-  graph.dijkstraRefinement();
+  // graph.dijkstraRefinement();
+  graph.toLatexString();
 }
