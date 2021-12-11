@@ -11,7 +11,7 @@ Iterable<int> radixSort(List<int> list, int m, int b) {
   final numBuckets = pow(2, b);
 
   // initialise the buckets
-  final buckets = List.generate(numBuckets, (i) => <String>[]);
+  final buckets = List.generate(numBuckets.toInt(), (i) => <String>[]);
   print('Empty buckets initialised!');
   
   // convert the list to binary (string)
@@ -51,6 +51,8 @@ Iterable<int> radixSort(List<int> list, int m, int b) {
 }
 
 void main(List<String> args) {
-  final list = [15, 43, 5, 27, 60, 18, 26, 25];
-  radixSort(list, 6, 2);
+  // final list = [15, 43, 5, 27, 60, 18, 26, 25];
+  // radixSort(list, 6, 2);
+  final list = [2, 4, 6, 1, 3, 5];
+  radixSort(list, 3, 1);
 }

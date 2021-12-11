@@ -10,7 +10,7 @@ class WeightedNode {
 class WeightedVertex {
   int index;
   List<WeightedNode> adjList;
-  String label;
+  String? label;
 
   WeightedVertex(this.index):adjList=[];
 
@@ -27,7 +27,7 @@ class WeightedVertex {
 }
 
 class Edge {
-  WeightedVertex from;
+  WeightedVertex? from;
   WeightedVertex to;
   int weight;
 
@@ -62,18 +62,18 @@ class WeightedGraph {
     }
   }
 
-  int _minVertex(List<int> weights, List<bool> inS) {
+  int _minVertex(List<int?> weights, List<bool> inS) {
     // the index of the smallest vertex
-    int minVertex;
+    int? minVertex;
 
     // for all the weights, find the vertex[i] not in vertexSet with minimum weight
     for (var i=0; i<weights.length; i++) {
-      if (!inS[i] && weights[i] != null && (minVertex == null || weights[i] < weights[minVertex])) {
+      if (!inS[i] && weights[i] != null && (minVertex == null || weights[i]! < weights[minVertex]!)) {
         minVertex = i;
       }
     }
 
-    return minVertex;
+    return minVertex!;
   }
 
   /// Given a vertex index [i], finds the optimal weight distance from the given vertex to all the other vertices.
@@ -90,7 +90,7 @@ class WeightedGraph {
     // the number of elements in S
     var countInS = 1;
     // the weight from the given vertex to all the vertices
-    final weights = List<int>.filled(vertices.length, null);
+    final weights = List<int>.filled(vertices.length, -1);
     // a node connected to a vertex
     WeightedNode node;
     
@@ -101,7 +101,7 @@ class WeightedGraph {
       print('\tThe weight for the vertex ${vertices[vertex2.index]} is ${vertex2.weight}');
       weights[vertex2.index] = vertex2.weight;
     }
-    print('\tOther weights are null');
+    print('\tOther weights are -1');
     print('The optimal list of weights is: $weights');
     
     // until we know the optimal distance for every vertex,
@@ -118,7 +118,7 @@ class WeightedGraph {
       for (var i=0; i<vertices[minVertex].adjList.length; i++) {
         node = vertices[minVertex].adjList[i];
         if (!inS[node.index]) {
-          if (weights[node.index] == null || weights[node.index] > weights[minVertex] + node.weight) {
+          if (weights[node.index] == -1 || weights[node.index] > weights[minVertex] + node.weight) {
             print('\tThe optimal weight for the vertex ${vertices[node.index]} was ${weights[node.index]}; it is now ${weights[minVertex] + node.weight}');
             weights[node.index] = weights[minVertex] + node.weight;
           }
@@ -147,7 +147,7 @@ class WeightedGraph {
     final edges = <Edge>[];
     
     // the edge with smallest weight connecting a non-tree vertex to a tree vertex
-    Edge minEdge;
+    Edge? minEdge;
     // the adjacency list for a given vertex
     List<WeightedNode> adjList;
     
@@ -165,7 +165,7 @@ class WeightedGraph {
           }
         }
       }
-      print('In this iteration, we make the vertex ${minEdge.to} a tree vertex. It is connected to the tree vertex ${minEdge.from} and has the smallest weight, namely ${minEdge.weight}');
+      print('In this iteration, we make the vertex ${minEdge!.to} a tree vertex. It is connected to the tree vertex ${minEdge.from} and has the smallest weight, namely ${minEdge.weight}');
       
       // make the new vertex a tree vertex and add the edge to the minimum spanning tree edges
       isTreeVertex[minEdge.to.index] = true;
@@ -196,7 +196,7 @@ class WeightedGraph {
     print('At the start, only ${vertices[0]} is a tree vertex.');
 
     // the best edge for a non-tree vertex to a tree vertex
-    final bestTreeVertex = List<Edge>.filled(vertices.length, null);
+    final bestTreeVertex = List<Edge?>.filled(vertices.length, null);
     print('Initialising the best tree vertex for non-tree vertices:');
     // initialise the best tree vertex map
     for (var i=0; i<vertices[0].adjList.length; i++) {
@@ -208,7 +208,7 @@ class WeightedGraph {
     // the edges in the minimum spanning tree
     final edges = <Edge>[];
     // the edge with smallest weight connecting a non-tree vertex to a tree vertex
-    Edge minEdge;
+    Edge? minEdge;
     // the key node within the relevant adjacency list
     WeightedNode key;
 
@@ -217,11 +217,11 @@ class WeightedGraph {
       print('-'*100);
       // find the edge with smallest weight connecting a non-tree vertex to a tree vertex by going through the bestTreeVertex map
       for (var i=0; i<vertices.length; i++) {
-        if (!isTreeVertex[i] && bestTreeVertex[i] != null && (minEdge == null || bestTreeVertex[i].weight < minEdge.weight)) {
+        if (!isTreeVertex[i] && bestTreeVertex[i] != null && (minEdge == null || bestTreeVertex[i]!.weight < minEdge.weight)) {
           minEdge = bestTreeVertex[i];
         }
       }
-      print('In this iteration, we make the vertex ${minEdge.to} a tree vertex. Its best tree vertex is ${minEdge.from} and the edge has weight ${minEdge.weight}');
+      print('In this iteration, we make the vertex ${minEdge!.to} a tree vertex. Its best tree vertex is ${minEdge.from} and the edge has weight ${minEdge.weight}');
       
       // make the new vertex a tree vertex and add the edge to the minimum spanning tree edges
       isTreeVertex[minEdge.to.index] = true;
@@ -232,12 +232,12 @@ class WeightedGraph {
       // change the bestTreeVertex for every non-tree vertex using this new tree vertex if possible
       for (var i = 0; i < vertices[minEdge.to.index].adjList.length; i++) {
         key = vertices[minEdge.to.index].adjList[i];
-        if (!isTreeVertex[key.index] && (bestTreeVertex[key.index] == null || key.weight < bestTreeVertex[key.index].weight)) {
+        if (!isTreeVertex[key.index] && (bestTreeVertex[key.index] == null || key.weight < bestTreeVertex[key.index]!.weight)) {
           print('\tThe edge with the smallest weight with respect to the non-tree vertex ${vertices[key.index]} is now the one to ${minEdge.to}, with weight ${key.weight}.');
           if (bestTreeVertex[key.index] == null) {
             print('\t\tPreviously, the vertex had no best tree vertex.');
           } else {
-            print('\t\tPreviously, the best tree vertex was ${vertices[bestTreeVertex[key.index].from.index]}, with weight ${bestTreeVertex[key.index].weight}.');
+            print('\t\tPreviously, the best tree vertex was ${vertices[bestTreeVertex[key.index]!.from!.index]}, with weight ${bestTreeVertex[key.index]!.weight}.');
           }
           bestTreeVertex[key.index] = Edge(minEdge.to, vertices[key.index], key.weight);
         }
@@ -332,20 +332,20 @@ WeightedGraph _createGraph() {
   graph.addEdge(0,1,5);
   graph.addEdge(0,2,10);
   graph.addEdge(0,5,8);
-  graph.addEdge(1,2,7);
+  graph.addEdge(1,2,3);
   graph.addEdge(1,4,9);
-  graph.addEdge(1,5,7);
+  graph.addEdge(1,5,2);
   graph.addEdge(2,3,6);
   graph.addEdge(2,4,8);
   graph.addEdge(2,5,8);
-  graph.addEdge(3,4,9);
+  graph.addEdge(3,4,1);
   graph.addEdge(3,5,10);
-  graph.addEdge(4,5,8);
+  graph.addEdge(4,5,5);
 
   return graph;
 }
 void main(List<String> args) {
   final graph = _createGraph();
-  graph.dijkstraRefinement();
+  graph.dijkstra(0);
   // graph.toLatexString();
 }

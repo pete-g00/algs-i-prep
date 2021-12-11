@@ -1,5 +1,5 @@
 class boolVar {
-  bool value;
+  bool? value;
   String name;
 
   boolVar(this.name);
@@ -16,7 +16,7 @@ class boolInstance {
 
   boolInstance(this.variable, [this.negated=false]);
 
-  bool get value => negated ? !variable.value : variable.value;
+  bool get value => negated ? !variable.value! : variable.value!;
 
   @override
   String toString() {
@@ -30,7 +30,7 @@ class Clause {
 
   Clause(this.variables);
 
-  bool get value =>  variables.any((variable) =>variable.value);
+  bool get value =>  variables.any((variable) => variable.value);
 
   @override
   String toString() {

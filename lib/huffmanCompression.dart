@@ -68,7 +68,7 @@ String huffmanCompression(String text) {
   for (final code in text.codeUnits) {
     // if the map contains the corresponding node, increase its frequency
     if (charMap.containsKey(code)) {
-      charMap[code].frequency++;
+      charMap[code]!.frequency++;
     }
     // otherwise, create a node for it (frequency defaults to 1)
     else {
@@ -126,9 +126,9 @@ String huffmanCompression(String text) {
 
   // for each character in the text,
   for (final code in text.codeUnits) {
-    print('Writing ${String.fromCharCode(code)} as its code: ${charMap[code].code}');
+    print('Writing ${String.fromCharCode(code)} as its code: ${charMap[code]!.code}');
     // write the corresponding code into the compressed file
-    compressed.write(charMap[code].code);
+    compressed.write(charMap[code]!.code);
   }
 
   print('The file is now compressed: $compressed');

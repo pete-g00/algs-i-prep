@@ -44,7 +44,7 @@ void printCharMap<V>(Map<int, V> map) {
   }
 }
 
-String writeEdge(String from, String to, bool isDirected, [int weight]) {
+String writeEdge(String from, String to, bool isDirected, [int? weight]) {
   if (isDirected && weight != null) {
     return '\\draw[->] ($from) to node[below] {$weight} ($to);';
   } else if (isDirected) {

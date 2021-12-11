@@ -6,7 +6,7 @@ class Vertex {
   int index;
   List<int> adjList;
   bool _visited;
-  String label;
+  String? label;
 
   Vertex(this.index):adjList=[], _visited=false;
 
@@ -23,7 +23,7 @@ class Vertex {
 }
 
 class Edge {
-  Vertex from;
+  Vertex? from;
   Vertex to;
 
   Edge(this.from, this.to);
@@ -58,7 +58,7 @@ class Graph {
     }
   }
 
-  void _dfsVisit(Vertex pred, Vertex next, void Function(Vertex pred, Vertex next) fn) {
+  void _dfsVisit(Vertex? pred, Vertex next, void Function(Vertex? pred, Vertex next) fn) {
     // this vertex has been visited
     next._visited = true;
     fn(pred, next);
@@ -73,7 +73,7 @@ class Graph {
   }
 
   /// Visits all the vertices using depth-first search
-  void dfs(void Function(Vertex pred, Vertex next) fn) {
+  void dfs(void Function(Vertex? pred, Vertex next) fn) {
     // unvisit every vertex
     for (final vertex in vertices) {
       vertex._visited = false;
@@ -103,7 +103,7 @@ class Graph {
     return edges;
   }
 
-  void _bfsVisit(Queue<Edge> queue, void Function(Vertex pred, Vertex next) fn) {
+  void _bfsVisit(Queue<Edge> queue, void Function(Vertex? pred, Vertex next) fn) {
     // until the queue is empty,
     while (queue.isNotEmpty) {
       // remove the first element from the queue
@@ -113,7 +113,7 @@ class Graph {
       if (!vertex._visited) {
         print('Visiting the vertex $vertex');
         if (edge.from != null) {
-        fn(vertices[edge.from.index], vertices[edge.to.index]);
+        fn(vertices[edge.from!.index], vertices[edge.to.index]);
         } else {
           fn(null, vertices[edge.to.index]);
         }
@@ -135,7 +135,7 @@ class Graph {
   }
 
   /// Visits all the vertices using breadth-first search
-  void bfs(void Function(Vertex pred, Vertex next) fn, [Vertex start]) {
+  void bfs(void Function(Vertex? pred, Vertex next) fn, [Vertex? start]) {
     // unvisit every vertex
     for (final vertex in vertices) {
       vertex._visited = false;
@@ -179,7 +179,7 @@ class Graph {
     final vertex = vertices[i];
     print('Finding the distance from $vertex to all the vertices.');
     // initialise the distance list
-    final dist = List<int>.filled(vertices.length, null);
+    final dist = List<int>.filled(vertices.length, 0);
     // visit the vertices using breadth first search
     bfs((pred, next) {
       // if there was no previous edge (i.e. next == vertex) -> distance = 0
@@ -207,7 +207,7 @@ class Graph {
     }
 
     // the in-degree of a vertex with respect to the vertices still unlabelled
-    final count = List.filled(vertices.length, 0);
+    final count = List<int?>.filled(vertices.length, null);
     // the queue containing source vertices with respect to the vertices still unlabelled
     final sourceQueue = Queue<int>();
     // the order of the vertices
@@ -246,7 +246,7 @@ class Graph {
       
       // decrement the in-degree of all the vertices that are incident to this vertex
       for (var j=0; j<vertices[i].adjList.length; j++) {
-        count[vertices[i].adjList[j]] --;
+        count[vertices[i].adjList[j]] = count[vertices[i].adjList[j]]! - 1;
         
         // if any of them become source vertices, add them to the queue
         if (count[vertices[i].adjList[j]] == 0) {

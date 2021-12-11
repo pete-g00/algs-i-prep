@@ -25,7 +25,7 @@ int bm(String string, String substring) {
   // the index in substring
   var j = m-1;
   // the value in the last occurrence map
-  int value;
+  int? value;
 
   final lastOccurrence = _createLastOcurrenceMap(substring);
   print('Created the last occurrence map:');
@@ -89,4 +89,5 @@ int bm(String string, String substring) {
 
 void main(List<String> args) {
   bm('bacbabababacaab', 'caab');
+  bm('agagtactgta', 'tgta');
 }

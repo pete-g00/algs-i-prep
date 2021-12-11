@@ -8,7 +8,7 @@ import 'auxiliary.dart';
 int stringDistance(String word1, String word2) {
   print('Computing the distance between word1: $word1 and word2: $word2');
   // initialise the table with base case
-  final table = List.generate(word1.length+1, (i) => List.generate(word2.length+1, (j) => (i == 0 || j == 0) ? i+j : 0));
+  final table = List.generate(word1.length+1, (i) => List.generate(word2.length+1, (j) => i == 0 ? 2*j : j == 0 ? i : 0));
   print('Table created with base cases: ');
   printTable(table);
   print('-'*100);
@@ -25,7 +25,7 @@ int stringDistance(String word1, String word2) {
       // otherwise, we take the smallest of the three values and increment it
       } else {
         print('Characters do not match, so incrementing the smallest of: diagonal entry ${table[i-1][j-1]}, vertical entry ${table[i-1][j]} and horizontal entry ${table[i][j-1]}');
-        table[i][j] = 1 + min(table[i-1][j-1], min(table[i-1][j], table[i][j-1]));
+        table[i][j] = min(3 + table[i-1][j-1], min(1 + table[i-1][j], 2 + table[i][j-1]));
       }
     }
     print('Table is now: ');
@@ -36,7 +36,7 @@ int stringDistance(String word1, String word2) {
   print('Computed all the values. Returning the value in the last cell- ${table[word1.length][word2.length]}');
   // the distance of the string is in the last cell
 
-  // print(listToTable(table));
+  print(listToTable(table));
   return table[word1.length][word2.length];
 }
 
